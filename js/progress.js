@@ -4,44 +4,122 @@
     'requerimientos', 'fallback', 'proximos-pasos', 'equipo', 'diseno-mesa'
   ];
 
-  const links = document.querySelectorAll('.sidebar-link');
+  const links = Array.from(document.querySelectorAll('.sidebar-link'));
   const progressLabel = document.getElementById('progress-label');
+  const fillEl = document.getElementById('sidebar-fill');
+  const indicatorEl = document.getElementById('sidebar-indicator');
+  const trackEl = document.getElementById('sidebar-nav');
   const total = sections.length;
 
-  if (!links.length) return;
+  if (!links.length || !trackEl) return;
 
   const sectionEls = sections
     .map((id) => document.getElementById(id))
     .filter(Boolean);
 
-  function setActive(id) {
-    const index = sections.indexOf(id);
-    if (index === -1) return;
+  let dotCenters = [];
+  let lineHeight = 0;
+  let ticking = false;
 
-    links.forEach((link, i) => {
-      link.classList.toggle('active', i === index);
-      link.classList.toggle('passed', i < index);
+  function measure() {
+    const trackRect = trackEl.getBoundingClientRect();
+    dotCenters = links.map((link) => {
+      const dot = link.querySelector('.sidebar-dot');
+      const r = dot.getBoundingClientRect();
+      return r.top - trackRect.top + r.height / 2;
     });
 
-    if (progressLabel) {
-      progressLabel.textContent = `${index + 1} / ${total}`;
+    const line = trackEl.querySelector('.sidebar-line');
+    if (line) {
+      const lr = line.getBoundingClientRect();
+      lineHeight = lr.height;
+    } else if (dotCenters.length > 1) {
+      lineHeight = dotCenters[dotCenters.length - 1] - dotCenters[0];
     }
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((e) => e.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+  function getScrollState() {
+    const anchor = window.scrollY + window.innerHeight * 0.32;
+    let index = 0;
+    let fraction = 0;
 
-      if (visible.length > 0) {
-        setActive(visible[0].target.id);
+    for (let i = 0; i < sectionEls.length; i++) {
+      const start = sectionEls[i].offsetTop;
+      const end = i < sectionEls.length - 1
+        ? sectionEls[i + 1].offsetTop
+        : document.documentElement.scrollHeight - window.innerHeight * 0.5;
+
+      if (anchor < start && i === 0) break;
+
+      if (anchor >= start) {
+        index = i;
+        const span = Math.max(end - start, 1);
+        fraction = Math.min(1, Math.max(0, (anchor - start) / span));
       }
-    },
-    { rootMargin: '-20% 0px -60% 0px', threshold: [0, 0.1, 0.25, 0.5] }
-  );
+    }
 
-  sectionEls.forEach((el) => observer.observe(el));
+    const overall = sectionEls.length > 1
+      ? (index + fraction) / (sectionEls.length - 1)
+      : 0;
+
+    return { index, fraction, overall };
+  }
+
+  function lerpY(overall) {
+    if (dotCenters.length < 2) return dotCenters[0] || 0;
+
+    const scaled = overall * (dotCenters.length - 1);
+    const i = Math.min(Math.floor(scaled), dotCenters.length - 2);
+    const t = scaled - i;
+    return dotCenters[i] + (dotCenters[i + 1] - dotCenters[i]) * t;
+  }
+
+  function update() {
+    measure();
+
+    const { index, fraction, overall } = getScrollState();
+
+    links.forEach((link, i) => {
+      const isActive = i === index;
+      const isPassed = i < index || (i === index && fraction > 0.15);
+
+      link.classList.toggle('active', isActive);
+      link.classList.toggle('passed', isPassed && !isActive);
+    });
+
+    if (fillEl && dotCenters.length > 1) {
+      const fillTop = dotCenters[0];
+      const y = lerpY(overall);
+      const fillPx = Math.max(0, y - fillTop);
+      fillEl.style.height = `${fillPx}px`;
+    }
+
+    if (indicatorEl && dotCenters.length) {
+      const y = lerpY(overall);
+      indicatorEl.style.transform = `translateY(${y - 9.5}px)`;
+    }
+
+    if (progressLabel) {
+      const display = Math.min(total, Math.max(1, Math.round(index + fraction + 0.15)));
+      const pct = Math.round(overall * 100);
+      progressLabel.textContent = `${display} / ${total} · ${pct}%`;
+    }
+
+    ticking = false;
+  }
+
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => {
+    measure();
+    update();
+  });
 
   links.forEach((link) => {
     link.addEventListener('click', (e) => {
@@ -55,10 +133,13 @@
     });
   });
 
-  if (location.hash) {
-    const id = location.hash.slice(1);
-    if (sections.includes(id)) setActive(id);
+  if (location.hash && sections.includes(location.hash.slice(1))) {
+    setTimeout(() => {
+      const target = document.querySelector(location.hash);
+      if (target) target.scrollIntoView({ block: 'start' });
+      update();
+    }, 100);
   } else {
-    setActive(sections[0]);
+    update();
   }
 })();
