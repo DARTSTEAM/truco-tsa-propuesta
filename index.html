@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Propuesta Técnica — Truco Series Argentina 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <div class="badge">Propuesta técnica v1.0</div>
+      <h1>Sistema de Métricas y Estadísticas</h1>
+      <p class="subtitle">Truco Series Argentina 2026 — ABN Digital para TSA Sports</p>
+      <div class="meta">
+        <span>Preparado por: ABN Digital</span>
+        <span>Felipe Ledesma · Bautista Ballatore</span>
+        <span>Julio 2026</span>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-brand">TSA Truco Stats</a>
+      <a href="#resumen">Resumen</a>
+      <a href="#alcance">Alcance</a>
+      <a href="#arquitectura">Arquitectura</a>
+      <a href="#fases">Fases</a>
+      <a href="#requerimientos">Requerimientos</a>
+      <a href="design-mesa.html">Diseño de mesa</a>
+      <a href="#proximos-pasos">Próximos pasos</a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+  <section id="resumen">
+    <h2>1. Resumen ejecutivo</h2>
+    <p>ABN Digital propone desarrollar el sistema de medición y estadísticas para <strong>Truco Series Argentina 2026</strong>, el primer torneo de truco televisado a escala nacional. El sistema está diseñado en capas, alineado con lo acordado en la reunión del <strong>23 de junio de 2026</strong> con Pablo Petinari, Agustín Vayo, Felipe Ledesma y Bautista Ballatore.</p>
+
+    <p>La propuesta se divide en dos bloques con niveles de certeza distintos:</p>
+
+    <div class="grid-2">
+      <div class="card guaranteed">
+        <div class="card-label">✓ Garantizado para noviembre 2026</div>
+        <ul>
+          <li>App de veedor/crupier en tablet</li>
+          <li>Digitalización de planillas de resultados</li>
+          <li>Estadísticas por equipo y jugador</li>
+          <li>Rankings y puntajes en tiempo real</li>
+          <li>Panel para comentaristas</li>
+          <li>Base de datos histórica (edición 1)</li>
+        </ul>
+      </div>
+      <div class="card research">
+        <div class="card-label">⚠ Sujeto a análisis de viabilidad</div>
+        <ul>
+          <li>Lectura automática de cartas por video (cardcams)</li>
+          <li>Identificación de jugador que tiró cada carta</li>
+          <li>Motor Monte Carlo de probabilidades en vivo</li>
+          <li>Integración con graphics de broadcast</li>
+          <li>Métricas de comportamiento (mentiras, estilo de juego)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout warning">
+      <strong>Transparencia técnica:</strong> Las probabilidades en tiempo real estilo PokerStars dependen de obtener el estado del juego de forma automática y confiable. Eso requiere validar la lectura de cartas por video con material real del torneo. <strong>No podemos garantizar ese componente hasta completar las pruebas de viabilidad.</strong> Si las pruebas no alcanzan los umbrales, el sistema operará con carga asistida por veedor y/o se evaluarán alternativas (RFID, diseño de mesa mejorado).
+    </div>
+  </section>
+
+  <section id="contexto">
+    <h2>2. Contexto del torneo</h2>
+    <table>
+      <thead>
+        <tr><th>Parámetro</th><th>Detalle</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Participantes</td><td>360 parejas (tríos de 3 jugadores)</td></tr>
+        <tr><td>Clasificación</td><td>1 jornada, 80 mesas simultáneas, 4 partidos por equipo</td></tr>
+        <tr><td>Puntaje clasificación</td><td>+3 por victoria, +1 bonus si rival duerme afuera, −1 si dormís afuera</td></tr>
+        <tr><td>Clasificados</td><td>12 mejores tríos → etapa televisada</td></tr>
+        <tr><td>Etapa televisada</td><td>16 tríos (12 clasificados + 4 invitados), grupos, playoffs</td></tr>
+        <tr><td>Transmisión</td><td>Fox Sports o ESPN, bloques de 2 horas</td></tr>
+        <tr><td>Fecha estimada</td><td>Noviembre–diciembre 2026</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Modelo de captura acordado</h3>
+    <table>
+      <thead>
+        <tr><th>Etapa</th><th>Mesas</th><th>Captura de datos</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Clasificación — general</td>
+          <td>~77 mesas</td>
+          <td>Planillas de papel firmadas por equipos + juez. Digitalización posterior.</td>
+        </tr>
+        <tr>
+          <td>Clasificación — instrumentadas</td>
+          <td>3 mesas</td>
+          <td>Cardcams + tablet de veedor + (si viable) probabilidades en vivo</td>
+        </tr>
+        <tr>
+          <td>Etapa televisada</td>
+          <td>3 mesas (rotación)</td>
+          <td>Cardcams + tablet + probabilidades + stats avanzadas</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="alcance">
+    <h2>3. Alcance del proyecto</h2>
+
+    <h3>3.1 Entregables garantizados</h3>
+    <p>ABN Digital garantiza la entrega funcional de los siguientes componentes para el torneo de noviembre 2026:</p>
+
+    <div class="card guaranteed">
+      <h4>A. App de veedor / crupier (tablet)</h4>
+      <p>Aplicación web optimizada para tablet donde el veedor registra eventos preestablecidos durante el partido:</p>
+      <ul>
+        <li>Selección de partido, equipos y jugadores</li>
+        <li>Registro de cantos: Envido, Real Envido, Falta Envido, Truco, Retruco, Vale 4, Flor</li>
+        <li>Registro de respuestas: Quiero / No Quiero</li>
+        <li>Resultado de cada mano y baza</li>
+        <li>Inicio y fin de Pica Pica, con ganador</li>
+        <li>Flags opcionales: mentira detectada, jugó con cartas, durmió afuera</li>
+        <li>Sincronización en tiempo real con la base de datos central</li>
+      </ul>
+    </div>
+
+    <div class="card guaranteed">
+      <h4>B. Sistema de planillas y resultados</h4>
+      <ul>
+        <li>Template digital equivalente a la planilla de papel de clasificación</li>
+        <li>Carga de resultados: partidos ganados/perdidos, puntos a favor/en contra</li>
+        <li>Módulo de ingreso batch para digitalizar planillas firmadas</li>
+        <li>Validación de consistencia (totales, firmas, juez asignado)</li>
+      </ul>
+    </div>
+
+    <div class="card guaranteed">
+      <h4>C. Motor de estadísticas y rankings</h4>
+      <ul>
+        <li><strong>Por equipo/trío:</strong> partidos jugados, ganados, perdidos, puntos a favor/contra, diferencia, efectividad %</li>
+        <li><strong>Por jugador:</strong> mismas métricas + ranking individual (relevante para Pica Pica)</li>
+        <li><strong>Ranking de clasificación</strong> actualizado en tiempo real conforme se cargan resultados</li>
+        <li><strong>Histórico:</strong> estructura de datos preparada para acumular entre ediciones</li>
+      </ul>
+    </div>
+
+    <div class="card guaranteed">
+      <h4>D. Panel para comentaristas</h4>
+      <ul>
+        <li>Interfaz web con stats del partido en curso y datos históricos del jugador/equipo</li>
+        <li>Acceso desde cualquier dispositivo en el estudio de transmisión</li>
+        <li>Datos listos para que el equipo de producción los incorpore al aire</li>
+      </ul>
+    </div>
+
+    <h3>3.2 Entregables sujetos a viabilidad (I+D)</h3>
+    <p>Los siguientes componentes constituyen un <strong>workstream de investigación y desarrollo</strong> separado. Su inclusión en el torneo de noviembre 2026 depende de los resultados del análisis de viabilidad.</p>
+
+    <div class="card research">
+      <h4>E. Lectura automática de cartas por video</h4>
+      <ul>
+        <li>Cardcams en zócalo de mesa (×6 por mesa instrumentada)</li>
+        <li>Cámara cenital para cartas jugadas en la mesa</li>
+        <li>Pipeline de visión por computadora: detección de carta (valor + palo)</li>
+        <li>Identificación de qué jugador (P1–P6) tiró cada carta según sector de la mesa</li>
+      </ul>
+      <p><strong>Dependencias críticas:</strong> calidad de imagen, diseño de mesa, iluminación, ángulo de cámaras, tipo de cartas. Ver <a href="design-mesa.html">diseño de mesa propuesto</a>.</p>
+    </div>
+
+    <div class="card research">
+      <h4>F. Motor Monte Carlo — probabilidades en tiempo real</h4>
+      <ul>
+        <li>Cálculo de probabilidad de victoria por equipo al repartir cartas</li>
+        <li>Recálculo en vivo cada vez que se juega una carta</li>
+        <li>Dos modos: Truco 6 jugadores y Pica Pica 1v1</li>
+        <li>Output para overlay de transmisión televisiva</li>
+      </ul>
+      <p><strong>Nota:</strong> El motor de cálculo en sí es técnicamente directo una vez que se dispone del estado del juego (cartas conocidas). El desafío está en <em>obtener ese estado</em> de forma automática y confiable desde video.</p>
+    </div>
+
+    <div class="card research">
+      <h4>G. Métricas de comportamiento (fase posterior)</h4>
+      <ul>
+        <li>Mentiras exitosas / fallidas</li>
+        <li>Efectividad jugando con cartas reales vs. sin cartas</li>
+        <li>Perfiles de jugador: conservador, agresivo, mentiroso, eficiente</li>
+      </ul>
+      <p>Requiere definición formal de reglas + datos de mano en tiempo real. Recomendamos posicionarlo como <strong>edición 2</strong> o piloto en mesas instrumentadas.</p>
+    </div>
+  </section>
+
+  <section id="arquitectura">
+    <h2>4. Arquitectura de datos</h2>
+
+    <div class="arch-diagram">
+<span class="hl">┌─────────────────────────────────────────────────────────┐</span>
+<span class="hl">│                    CAPA DE CAPTURA                       │</span>
+<span class="hl">├──────────────┬──────────────────┬───────────────────────┤</span>
+│  Planillas   │  App Veedor      │  Cardcams + CV        │
+│  (papel →    │  (tablet)        │  (sujeto a           │
+│   digital)   │  [GARANTIZADO]   │   viabilidad)         │
+<span class="hl2">├──────────────┴──────────────────┴───────────────────────┤</span>
+<span class="hl2">│                  API / EVENT BUS                         │</span>
+<span class="hl2">├─────────────────────────────────────────────────────────┤</span>
+<span class="hl2">│                  MOTOR DE REGLAS                         │</span>
+│  Estado del juego · Puntajes · Validación de reglas      │
+<span class="hl3">├──────────────────────┬──────────────────────────────────┤</span>
+<span class="hl3">│  Motor Estadísticas  │  Motor Monte Carlo               │</span>
+│  [GARANTIZADO]       │  [SUJETO A VIABILIDAD]           │
+<span class="hl">├──────────────────────┴──────────────────────────────────┤</span>
+<span class="hl">│                  BASE DE DATOS                           │</span>
+│  Jugadores · Equipos · Partidos · Manos · Eventos ·     │
+│  Temporadas · Rankings históricos                        │
+<span class="hl">├─────────────────────────────────────────────────────────┤</span>
+<span class="hl">│                  CAPA DE CONSUMO                         │</span>
+│  Panel comentaristas · API broadcast · Redes sociales    │
+<span class="hl">└─────────────────────────────────────────────────────────┘</span>
+    </div>
+
+    <h3>Modelo de entidades principal</h3>
+    <table>
+      <thead>
+        <tr><th>Entidad</th><th>Descripción</th><th>Fuente de datos</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Jugador</td><td>Perfil individual, histórico multi-temporada</td><td>Registro + acumulado</td></tr>
+        <tr><td>Equipo / Trío</td><td>Agrupación de 3 jugadores por partido</td><td>Registro + acumulado</td></tr>
+        <tr><td>Partido</td><td>Encuentro entre 2 equipos, con resultado final</td><td>Planilla / veedor</td></tr>
+        <tr><td>Mano</td><td>Una ronda dentro del partido (hasta 30 puntos)</td><td>Veedor / CV</td></tr>
+        <tr><td>Baza</td><td>Cada jugada de cartas dentro de la mano</td><td>CV / veedor</td></tr>
+        <tr><td>Evento</td><td>Canto, respuesta, mentira, pica pica</td><td>Veedor (tablet)</td></tr>
+        <tr><td>Carta</td><td>Valor + palo, jugador, momento</td><td>CV (si viable) / veedor</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Principio de diseño: criterio uniforme</h3>
+    <p>Como acordó Pablo Petinari en la reunión, las métricas deben ser las mismas para todos los participantes. La diferencia entre mesas es la <strong>riqueza de captura</strong>, no el tipo de estadística:</p>
+    <ul>
+      <li>Todas las mesas generan: partidos, puntos, ranking.</li>
+      <li>Mesas instrumentadas generan además: eventos por mano, y (si viable) probabilidades.</li>
+      <li>El histórico acumula lo que cada edición permita capturar.</li>
+    </ul>
+  </section>
+
+  <section id="fases">
+    <h2>5. Fases de desarrollo</h2>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>Fase 0 — Análisis de viabilidad (Julio 2026)</h4>
+        <p><strong>Duración estimada:</strong> 3–4 semanas</p>
+        <ul>
+          <li>Recepción de video de prueba de TSA Sports (ver requerimientos abajo)</li>
+          <li>Prueba de reconocimiento de cartas con visión por computadora</li>
+          <li>Validación de diseño de mesa y posiciones de cámara</li>
+          <li>Informe de viabilidad con métricas de precisión y latencia</li>
+          <li>Decisión go/no-go para cardcams + Monte Carlo en noviembre</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Fase 1 — Core garantizado (Agosto–Septiembre 2026)</h4>
+        <p><strong>Entregables:</strong> App veedor, planillas, stats, rankings, panel comentaristas, base de datos.</p>
+        <ul>
+          <li>Backend API + base de datos</li>
+          <li>App tablet para veedor con eventos preestablecidos</li>
+          <li>Módulo de carga de planillas de clasificación</li>
+          <li>Motor de estadísticas (equipo + jugador)</li>
+          <li>Panel web para comentaristas</li>
+          <li>Testing con datos simulados de torneo</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item research">
+        <h4>Fase 2 — Probabilidades en vivo (Septiembre–Octubre 2026)</h4>
+        <p><strong>Condición:</strong> Solo si Fase 0 confirma viabilidad.</p>
+        <ul>
+          <li>Pipeline de visión por computadora integrado</li>
+          <li>Motor Monte Carlo (6 jugadores + Pica Pica)</li>
+          <li>Integración cardcams → motor de probabilidades</li>
+          <li>API de output para graphics de broadcast</li>
+          <li>Piloto en condiciones reales (mesa de prueba)</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item">
+        <h4>Fase 3 — Operación en torneo (Noviembre 2026)</h4>
+        <ul>
+          <li>Clasificación: planillas (80 mesas) + instrumentación (3 mesas)</li>
+          <li>Etapa televisada: operación completa en 3 mesas</li>
+          <li>Soporte técnico on-site durante el evento</li>
+          <li>Monitoreo y fallback operativo (carga manual si CV falla)</li>
+        </ul>
+      </div>
+
+      <div class="timeline-item research">
+        <h4>Fase 4 — Evolución (2027+)</h4>
+        <ul>
+          <li>Métricas de comportamiento y perfiles de jugador</li>
+          <li>Histórico acumulado multi-temporada</li>
+          <li>Escalamiento a más mesas instrumentadas</li>
+          <li>Evaluación de RFID u otras tecnologías</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="requerimientos">
+    <h2>6. Requerimientos del cliente</h2>
+    <p>Para avanzar, necesitamos de TSA Sports los siguientes insumos:</p>
+
+    <table>
+      <thead>
+        <tr><th>#</th><th>Requerimiento</th><th>Prioridad</th><th>Para qué</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>Video de prueba</strong> — 1 mano completa, 1080p, con tirada de cartas visible (cenital + cardcam)</td>
+          <td>Crítica</td>
+          <td>Análisis de viabilidad CV</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>Reglamento oficial</strong> del torneo (reglas de envido, truco, flor, pica pica, puntajes)</td>
+          <td>Crítica</td>
+          <td>Motor de reglas y stats</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>Definición de "mentira"</strong> — qué se considera mentira para estadísticas</td>
+          <td>Media</td>
+          <td>Métricas de comportamiento</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>Especificaciones de mesa</strong> — dimensiones, material, proveedor de mesas del torneo</td>
+          <td>Alta</td>
+          <td>Diseño de cardcams y sectores</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><strong>Contacto de producción AV</strong> — quién monta cámaras, iluminación, broadcast</td>
+          <td>Alta</td>
+          <td>Integración técnica</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><strong>Formato de graphics TV</strong> — sistema de overlay (Vizrt, Ross, etc.)</td>
+          <td>Media</td>
+          <td>Integración probabilidades</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><strong>Lista de jugadores/equipos</strong> con IDs para la base de datos</td>
+          <td>Alta</td>
+          <td>Registro y stats</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>Video de prueba — detalle:</strong> Necesitamos grabación de al menos una mano donde se vea claramente el reparto, la levantada de cartas y cada tirada a la mesa. Idealmente con ángulo cenital y un ángulo tipo cardcam. Esto nos permite evaluar si el sistema de visión por computadora alcanza los umbrales mínimos (≥90% precisión en carta, ≥95% en jugador, &lt;3s latencia). Ver especificaciones completas en el <a href="design-mesa.html#test-video">anexo de diseño de mesa</a>.
+    </div>
+  </section>
+
+  <section id="fallback">
+    <h2>7. Plan de contingencia</h2>
+    <p>Si el análisis de viabilidad de cardcams no alcanza los umbrales para noviembre 2026:</p>
+    <table>
+      <thead>
+        <tr><th>Escenario</th><th>Alternativa</th><th>Impacto en TV</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>CV parcialmente funcional</td>
+          <td>Veedor confirma/corrige cartas en tablet; CV asiste</td>
+          <td>Probabilidades con delay de 5–10s</td>
+        </tr>
+        <tr>
+          <td>CV no funcional</td>
+          <td>Veedor carga cartas manualmente en tablet</td>
+          <td>Probabilidades disponibles, sin automatización</td>
+        </tr>
+        <tr>
+          <td>CV no viable en absoluto</td>
+          <td>Solo stats garantizadas (Fase 1 completa)</td>
+          <td>Sin probabilidades en vivo; stats de equipo/jugador sí</td>
+        </tr>
+        <tr>
+          <td>RFID evaluado positivamente</td>
+          <td>Cartas con chip RFID + lectores en mesa</td>
+          <td>Mayor precisión, mayor costo y lead time</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>En todos los escenarios, el <strong>sistema garantizado (Fase 1) opera con normalidad</strong>. Las probabilidades son un valor agregado condicionado a viabilidad técnica.</p>
+  </section>
+
+  <section id="proximos-pasos">
+    <h2>8. Próximos pasos</h2>
+    <ol>
+      <li><strong>Revisión de esta propuesta</strong> — TSA Sports valida alcance, fases y distinción garantizado vs. viabilidad.</li>
+      <li><strong>Envío de video de prueba y reglamento</strong> — insumos críticos para Fase 0.</li>
+      <li><strong>Reunión de alineación de scope</strong> — antes de presupuesto final (como acordó Pablo).</li>
+      <li><strong>Informe de viabilidad</strong> — ABN entrega resultados de Fase 0 con go/no-go para cardcams.</li>
+      <li><strong>Propuesta comercial</strong> — presupuesto desglosado por fase (Fase 1 garantizada + Fase 2 condicional).</li>
+      <li><strong>Kick-off Fase 1</strong> — inicio de desarrollo del core garantizado.</li>
+    </ol>
+  </section>
+
+  <section id="equipo">
+    <h2>9. Equipo ABN Digital</h2>
+    <table>
+      <thead>
+        <tr><th>Rol</th><th>Responsable</th><th>Área</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Director de proyecto</td><td>Felipe Ledesma</td><td>Arquitectura, reglas de juego, coordinación</td></tr>
+        <tr><td>Desarrollo y datos</td><td>Bautista Ballatore</td><td>Backend, app veedor, stats, integración</td></tr>
+        <tr><td>Visión por computadora</td><td>ABN Digital (I+D)</td><td>Cardcams, pipeline CV, Monte Carlo</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  </main>
+
+  <footer>
+    <div class="container">
+      <p><strong>ABN Digital</strong> — Propuesta técnica confidencial para TSA Sports</p>
+      <p>Truco Series Argentina 2026 · Julio 2026 · v1.0</p>
+      <p style="margin-top:12px"><a href="design-mesa.html">Ver diseño de mesa y especificaciones de cardcams →</a></p>
+    </div>
+  </footer>
+</body>
+</html>
