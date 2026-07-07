@@ -24,25 +24,28 @@
       <div class="meta">
         <span>Felipe Ledesma · Bautista Ballatore</span>
         <span>Julio 2026</span>
-        <span><a href="design-mesa.html">Diseño de mesa →</a></span>
       </div>
     </div>
   </header>
 
-  <nav>
-    <div class="container">
-      <a href="#" class="nav-brand">TSA Truco Stats</a>
-      <a href="#resumen">Resumen</a>
-      <a href="#alcance">Alcance</a>
-      <a href="#arquitectura">Arquitectura</a>
-      <a href="#fases">Fases</a>
-      <a href="#requerimientos">Requerimientos</a>
-      <a href="design-mesa.html">Diseño de mesa</a>
-      <a href="#proximos-pasos">Próximos pasos</a>
-    </div>
-  </nav>
+  <div class="page-layout">
+    <aside class="sidebar" aria-label="Navegación de secciones">
+      <div class="sidebar-progress"><span id="progress-label">1 / 10</span></div>
+      <nav class="sidebar-track" id="sidebar-nav">
+        <a href="#resumen" class="sidebar-link" data-index="1"><span class="sidebar-dot"></span><span class="sidebar-label">Resumen</span></a>
+        <a href="#contexto" class="sidebar-link" data-index="2"><span class="sidebar-dot"></span><span class="sidebar-label">Contexto</span></a>
+        <a href="#alcance" class="sidebar-link" data-index="3"><span class="sidebar-dot"></span><span class="sidebar-label">Alcance</span></a>
+        <a href="#arquitectura" class="sidebar-link" data-index="4"><span class="sidebar-dot"></span><span class="sidebar-label">Arquitectura</span></a>
+        <a href="#fases" class="sidebar-link" data-index="5"><span class="sidebar-dot"></span><span class="sidebar-label">Fases</span></a>
+        <a href="#requerimientos" class="sidebar-link" data-index="6"><span class="sidebar-dot"></span><span class="sidebar-label">Requerimientos</span></a>
+        <a href="#fallback" class="sidebar-link" data-index="7"><span class="sidebar-dot"></span><span class="sidebar-label">Contingencia</span></a>
+        <a href="#proximos-pasos" class="sidebar-link" data-index="8"><span class="sidebar-dot"></span><span class="sidebar-label">Próximos pasos</span></a>
+        <a href="#equipo" class="sidebar-link" data-index="9"><span class="sidebar-dot"></span><span class="sidebar-label">Equipo</span></a>
+        <a href="#diseno-mesa" class="sidebar-link" data-index="10"><span class="sidebar-dot"></span><span class="sidebar-label">Diseño de mesa</span></a>
+      </nav>
+    </aside>
 
-  <main class="container">
+  <main class="content">
 
   <section id="resumen">
     <h2>1. Resumen ejecutivo</h2>
@@ -181,7 +184,7 @@
         <li>Pipeline de visión por computadora: detección de carta (valor + palo)</li>
         <li>Identificación de qué jugador (P1–P6) tiró cada carta según sector de la mesa</li>
       </ul>
-      <p><strong>Dependencias críticas:</strong> calidad de imagen, diseño de mesa, iluminación, ángulo de cámaras, tipo de cartas. Ver <a href="design-mesa.html">diseño de mesa propuesto</a>.</p>
+      <p><strong>Dependencias críticas:</strong> calidad de imagen, diseño de mesa, iluminación, ángulo de cámaras, tipo de cartas. Ver <a href="#diseno-mesa">sección 10 — Diseño de mesa</a>.</p>
     </div>
 
     <div class="card research">
@@ -436,7 +439,7 @@
     </table>
 
     <div class="callout">
-      <strong>Video de prueba — detalle:</strong> Necesitamos grabación de al menos una mano donde se vea claramente el reparto, la levantada de cartas y cada tirada a la mesa. Idealmente con ángulo cenital y un ángulo tipo cardcam. Esto nos permite evaluar si el sistema de visión por computadora alcanza los umbrales mínimos (≥90% precisión en carta, ≥95% en jugador, &lt;3s latencia). Ver especificaciones completas en el <a href="design-mesa.html#test-video">anexo de diseño de mesa</a>.
+      <strong>Video de prueba — detalle:</strong> Necesitamos grabación de al menos una mano donde se vea claramente el reparto, la levantada de cartas y cada tirada a la mesa. Idealmente con ángulo cenital y un ángulo tipo cardcam. Esto nos permite evaluar si el sistema de visión por computadora alcanza los umbrales mínimos (≥90% precisión en carta, ≥95% en jugador, &lt;3s latencia). Ver especificaciones en la <a href="#diseno-mesa">sección 10 — Diseño de mesa</a>.
     </div>
   </section>
 
@@ -499,15 +502,211 @@
     </table>
   </section>
 
+  <div class="section-separator">
+    <span>Anexo técnico</span>
+  </div>
+
+  <section id="diseno-mesa" class="section-anexo">
+    <div class="section-eyebrow">
+      <div class="section-eyebrow-dot"></div>
+      <span>Sección 10 — Anexo técnico</span>
+    </div>
+    <h2>10. Diseño de mesa para captura de datos</h2>
+    <p>Layout, posiciones de jugadores, cardcams y zonas de juego para identificar qué jugador tiró cada carta. Este anexo describe los requisitos físicos y de producción necesarios para la capa de visión por computadora (sujeta a viabilidad).</p>
+
+    <h3>Objetivo del diseño</h3>
+    <p>Para calcular probabilidades de victoria en tiempo real, el sistema necesita saber <strong>qué carta jugó cada jugador</strong> en cada baza. Esto requiere un diseño de mesa que combine:</p>
+    <ul>
+      <li><strong>Cardcams</strong> — lectura de cartas al repartir y al mirar la mano (como en poker televisado).</li>
+      <li><strong>Cámara cenital (overhead)</strong> — detectar la carta jugada en la mesa y desde qué posición fue tirada.</li>
+      <li><strong>Zonas físicas delimitadas</strong> — cada jugador tiene un sector asignado para identificar el origen de la carta.</li>
+      <li><strong>App de veedor</strong> — confirma eventos que la cámara no puede inferir (cantos, respuestas, resultado de mano).</li>
+    </ul>
+
+    <div class="callout warning">
+      <strong>Nota importante:</strong> La viabilidad de la lectura automática de cartas por video depende de pruebas con material real del torneo. Ver <a href="#test-video">Video de prueba</a> más abajo.
+    </div>
+
+    <h3>Layout de la mesa — Truco 6 jugadores</h3>
+    <p>Distribución estándar: 2 equipos de 3 jugadores. Los equipos se sientan alternados (A-B-A-B-A-B) para que los compañeros no estén adyacentes.</p>
+
+    <div class="table-diagram">
+      <div class="table-svg-wrap">
+        <svg viewBox="0 0 720 720" width="100%" style="max-width:600px;margin:0 auto;display:block" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="360" cy="360" rx="280" ry="200" fill="#F7F4F1" stroke="#7E6E94" stroke-width="2"/>
+          <ellipse cx="360" cy="360" rx="240" ry="165" fill="none" stroke="rgba(126,110,148,0.3)" stroke-width="1" stroke-dasharray="6,4"/>
+          <ellipse cx="360" cy="360" rx="80" ry="55" fill="#FFFFFF" stroke="#2D1B4E" stroke-width="2" stroke-dasharray="4,3"/>
+          <text x="360" y="355" text-anchor="middle" fill="#2D1B4E" font-size="11" font-family="Inter,sans-serif" font-weight="600">ZONA DE JUEGO</text>
+          <text x="360" y="372" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Cartas jugadas</text>
+          <g transform="translate(360, 95)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700" font-family="Inter,sans-serif">P1</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo A</text>
+            <circle cx="0" cy="28" r="6" fill="#7C3AED" opacity="0.5"/>
+          </g>
+          <g transform="translate(555, 195)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#DC2626" font-size="13" font-weight="700" font-family="Inter,sans-serif">P2</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo B</text>
+            <circle cx="0" cy="28" r="6" fill="#DC2626" opacity="0.5"/>
+          </g>
+          <g transform="translate(555, 525)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700" font-family="Inter,sans-serif">P3</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo A</text>
+            <circle cx="0" cy="28" r="6" fill="#7C3AED" opacity="0.5"/>
+          </g>
+          <g transform="translate(360, 625)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#DC2626" font-size="13" font-weight="700" font-family="Inter,sans-serif">P4</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo B</text>
+            <circle cx="0" cy="28" r="6" fill="#DC2626" opacity="0.5"/>
+          </g>
+          <g transform="translate(165, 525)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#7C3AED" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#7C3AED" font-size="13" font-weight="700" font-family="Inter,sans-serif">P5</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo A</text>
+            <circle cx="0" cy="28" r="6" fill="#7C3AED" opacity="0.5"/>
+          </g>
+          <g transform="translate(165, 195)">
+            <rect x="-55" y="-30" width="110" height="60" rx="8" fill="#FFFFFF" stroke="#DC2626" stroke-width="2"/>
+            <text x="0" y="-8" text-anchor="middle" fill="#DC2626" font-size="13" font-weight="700" font-family="Inter,sans-serif">P6</text>
+            <text x="0" y="10" text-anchor="middle" fill="#6B6272" font-size="9" font-family="Inter,sans-serif">Equipo B</text>
+            <circle cx="0" cy="28" r="6" fill="#DC2626" opacity="0.5"/>
+          </g>
+          <line x1="360" y1="155" x2="360" y2="305" stroke="#7C3AED" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <line x1="505" y1="225" x2="410" y2="330" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <line x1="505" y1="495" x2="410" y2="390" stroke="#7C3AED" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <line x1="360" y1="565" x2="360" y2="415" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <line x1="215" y1="495" x2="310" y2="390" stroke="#7C3AED" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <line x1="215" y1="225" x2="310" y2="330" stroke="#DC2626" stroke-width="1" stroke-dasharray="3,3" opacity="0.35"/>
+          <g transform="translate(360, 360)">
+            <circle cx="0" cy="-120" r="18" fill="#2D1B4E" stroke="#F4EB33" stroke-width="2"/>
+            <line x1="0" y1="-102" x2="0" y2="-60" stroke="#F4EB33" stroke-width="1.5" stroke-dasharray="4,2" opacity="0.7"/>
+            <text x="0" y="-130" text-anchor="middle" fill="#2D1B4E" font-size="9" font-weight="600" font-family="Inter,sans-serif">CÁMARA CENITAL</text>
+          </g>
+          <g transform="translate(360, 700)">
+            <rect x="-50" y="-15" width="100" height="30" rx="6" fill="#2D1B4E" stroke="#7E6E94" stroke-width="1"/>
+            <text x="0" y="4" text-anchor="middle" fill="#ffffff" font-size="9" font-family="Inter,sans-serif">VEEDOR + TABLET</text>
+          </g>
+        </svg>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#7C3AED"></div> Equipo A (P1, P3, P5)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#DC2626"></div> Equipo B (P2, P4, P6)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#2D1B4E"></div> Cámara cenital</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#F4EB33"></div> Zona central de juego</div>
+      </div>
+    </div>
+
+    <table class="spec-table">
+      <thead>
+        <tr><th>Posición</th><th>Equipo</th><th>Cardcam</th><th>Zona de tiro</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>P1</td><td>A</td><td>Sí — zócalo frontal</td><td>Sector 12 h</td></tr>
+        <tr><td>P2</td><td>B</td><td>Sí — zócalo frontal</td><td>Sector 2 h</td></tr>
+        <tr><td>P3</td><td>A</td><td>Sí — zócalo frontal</td><td>Sector 4 h</td></tr>
+        <tr><td>P4</td><td>B</td><td>Sí — zócalo frontal</td><td>Sector 6 h</td></tr>
+        <tr><td>P5</td><td>A</td><td>Sí — zócalo frontal</td><td>Sector 8 h</td></tr>
+        <tr><td>P6</td><td>B</td><td>Sí — zócalo frontal</td><td>Sector 10 h</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Sistema de cámaras</h3>
+    <div class="grid-2">
+      <div class="card">
+        <h4>Cardcams (×6)</h4>
+        <ul>
+          <li>Montadas en el zócalo de la mesa, frente a cada jugador.</li>
+          <li>Activación al levantar las cartas para ver la mano.</li>
+          <li>Objetivo: identificar las 3 cartas de cada jugador al inicio de la mano.</li>
+          <li>Referencia: sistema PokerStars (card hole cameras).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Cámara cenital (×1)</h4>
+        <ul>
+          <li>Montada sobre la mesa (brazo o techo del estudio).</li>
+          <li>Campo visual: zona central + sectores de tiro.</li>
+          <li>Objetivo: detectar carta jugada + posición de origen (P1–P6).</li>
+          <li>Resolución mínima sugerida: 1080p a 30 fps.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>Flujo de identificación de carta jugada</h3>
+    <ol>
+      <li>El jugador en turno tira su carta hacia la zona central, dentro de su sector asignado.</li>
+      <li>La cámara cenital captura la carta y su posición angular respecto al centro.</li>
+      <li>El sistema mapea la posición al jugador (P1–P6) según el sector predefinido.</li>
+      <li>Se identifica el palo y valor de la carta (visión por computadora — sujeto a viabilidad).</li>
+      <li>El veedor confirma en tablet si hay ambigüedad.</li>
+      <li>El motor Monte Carlo recalcula probabilidades con el nuevo estado.</li>
+    </ol>
+
+    <h3>Zonas físicas en el fieltro</h3>
+    <ul>
+      <li><strong>Líneas radiales</strong> desde el centro hacia cada posición (6 sectores de 60°).</li>
+      <li><strong>Código de color sutil</strong> en el borde de cada sector (violeta = Equipo A, rojo = Equipo B).</li>
+      <li><strong>Número de posición</strong> (P1–P6) impreso discretamente en el área de cada jugador.</li>
+      <li><strong>Zona de descarte</strong> delimitada: las cartas deben caer dentro del sector del jugador.</li>
+    </ul>
+
+    <h3>Pica Pica (1 vs 1)</h3>
+    <p>En modalidad Pica Pica solo participan 2 jugadores. El layout se simplifica: los 4 restantes observan. Las cardcams de los jugadores activos siguen operativas; la cámara cenital enfoca la zona de juego reducida entre los dos competidores.</p>
+
+    <h3>Requerimientos de producción</h3>
+    <table>
+      <thead>
+        <tr><th>Elemento</th><th>Especificación</th><th>Responsable sugerido</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Mesa oficial</td><td>Elíptica u octagonal, ~120×80 cm, fieltro verde</td><td>Producción TSA</td></tr>
+        <tr><td>Zócalo con cardcams</td><td>Ranura para cartas + cámara miniatura por puesto (×6)</td><td>Proveedor AV / ABN (spec)</td></tr>
+        <tr><td>Iluminación</td><td>LED difuso, sin sombras ni reflejos en cartas</td><td>Producción TV</td></tr>
+        <tr><td>Cámara cenital</td><td>1080p mínimo, montaje estable</td><td>Proveedor AV</td></tr>
+        <tr><td>Red en venue</td><td>Conexión cableada o WiFi dedicado por mesa</td><td>Producción / ABN</td></tr>
+        <tr><td>Tablet veedor</td><td>iPad o Android, app web ABN</td><td>ABN Digital</td></tr>
+      </tbody>
+    </table>
+
+    <h3 id="test-video">Video de prueba — Solicitud a TSA Sports</h3>
+    <div class="callout warning">
+      <strong>Prerequisito para validar viabilidad de cardcams y visión por computadora.</strong>
+      Antes del demo técnico, necesitamos material de referencia grabado en condiciones lo más cercanas posibles a las del torneo.
+    </div>
+    <ul>
+      <li>Video de <strong>1 mano completa</strong> de truco (6 jugadores), idealmente 2–3 bazas.</li>
+      <li>Que se vea claramente: reparto, levantada de cartas, tirada de cada carta a la mesa.</li>
+      <li>Resolución mínima: <strong>1080p</strong>.</li>
+      <li>Ángulos: 1 toma cenital + 1 toma tipo cardcam.</li>
+      <li>Cartas estándar de truco español (40 cartas).</li>
+    </ul>
+    <table>
+      <thead>
+        <tr><th>Criterio</th><th>Umbral mínimo</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Reconocimiento de carta jugada (valor + palo)</td><td>≥ 90% precisión</td></tr>
+        <tr><td>Identificación de jugador que tiró</td><td>≥ 95% (con sectores marcados)</td></tr>
+        <tr><td>Latencia de procesamiento</td><td>&lt; 3 segundos</td></tr>
+        <tr><td>Lectura de mano (cardcam al repartir)</td><td>≥ 85% precisión</td></tr>
+      </tbody>
+    </table>
+    <p>Si los umbrales no se alcanzan, evaluaremos alternativas: ajuste de diseño de mesa, mejor iluminación, RFID en cartas, o carga asistida por veedor en tablet.</p>
+  </section>
+
   </main>
+  </div>
 
   <footer>
     <div class="container footer-inner">
       <img src="https://storage.googleapis.com/abn-assets/hike_logo_blanco_1080x1080.png" alt="Hike" class="logo">
       <p><strong style="color:rgba(255,255,255,0.8);font-weight:600">ABN Digital</strong> — Propuesta técnica confidencial para TSA Sports</p>
       <p>Truco Series Argentina 2026 · Julio 2026 · v1.0</p>
-      <p><a href="design-mesa.html">Ver diseño de mesa y especificaciones de cardcams →</a></p>
     </div>
   </footer>
+  <script src="js/progress.js"></script>
 </body>
 </html>
