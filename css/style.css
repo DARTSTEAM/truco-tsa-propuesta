@@ -404,23 +404,108 @@ tr:hover td { background: var(--accent-light); }
   font-weight: 600;
 }
 
-/* ── Architecture diagram ── */
-.arch-diagram {
-  background: var(--dark);
-  border: 1px solid rgba(126, 110, 148, 0.2);
+/* ── Architecture stack diagram ── */
+.arch-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
   border-radius: var(--radius-card);
-  padding: 28px;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  line-height: 1.9;
-  overflow-x: auto;
-  color: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
+  border: 1px solid rgba(126, 110, 148, 0.25);
+  box-shadow: var(--shadow-card);
 }
 
-.arch-diagram .hl { color: var(--yellow); }
-.arch-diagram .hl2 { color: #c4b5fd; }
-.arch-diagram .hl3 { color: #fbbf24; }
+.arch-layer {
+  background: var(--dark);
+  border-bottom: 1px solid rgba(126, 110, 148, 0.2);
+  padding: 20px 24px;
+}
 
+.arch-layer:last-child { border-bottom: none; }
+
+.arch-layer-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 14px;
+}
+
+.arch-layer-title.muted { color: #c4b5fd; }
+.arch-layer-title.warn { color: #fbbf24; }
+
+.arch-cells {
+  display: grid;
+  gap: 10px;
+}
+
+.arch-cells.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.arch-cells.cols-2 { grid-template-columns: repeat(2, 1fr); }
+.arch-cells.cols-1 { grid-template-columns: 1fr; }
+
+@media (max-width: 600px) {
+  .arch-cells.cols-3,
+  .arch-cells.cols-2 { grid-template-columns: 1fr; }
+}
+
+.arch-cell {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(126, 110, 148, 0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.arch-cell-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+.arch-cell-desc {
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.5;
+}
+
+.arch-cell-tag {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.arch-cell-tag.guaranteed {
+  background: rgba(5, 150, 105, 0.2);
+  color: #34d399;
+}
+
+.arch-cell-tag.research {
+  background: rgba(217, 119, 6, 0.2);
+  color: #fbbf24;
+}
+
+.arch-layer-detail {
+  font-size: 0.8rem;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.6;
+}
+
+.arch-arrow {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0;
+  background: rgba(0, 0, 0, 0.2);
+  color: rgba(126, 110, 148, 0.6);
+  font-size: 0.75rem;
+}
 /* ── Callouts ── */
 .callout {
   background: var(--accent-light);

@@ -209,29 +209,88 @@
   <section id="arquitectura">
     <h2>4. Arquitectura de datos</h2>
 
-    <div class="arch-diagram">
-<span class="hl">┌─────────────────────────────────────────────────────────┐</span>
-<span class="hl">│                    CAPA DE CAPTURA                       │</span>
-<span class="hl">├──────────────┬──────────────────┬───────────────────────┤</span>
-│  Planillas   │  App Veedor      │  Cardcams + CV        │
-│  (papel →    │  (tablet)        │  (sujeto a           │
-│   digital)   │  [GARANTIZADO]   │   viabilidad)         │
-<span class="hl2">├──────────────┴──────────────────┴───────────────────────┤</span>
-<span class="hl2">│                  API / EVENT BUS                         │</span>
-<span class="hl2">├─────────────────────────────────────────────────────────┤</span>
-<span class="hl2">│                  MOTOR DE REGLAS                         │</span>
-│  Estado del juego · Puntajes · Validación de reglas      │
-<span class="hl3">├──────────────────────┬──────────────────────────────────┤</span>
-<span class="hl3">│  Motor Estadísticas  │  Motor Monte Carlo               │</span>
-│  [GARANTIZADO]       │  [SUJETO A VIABILIDAD]           │
-<span class="hl">├──────────────────────┴──────────────────────────────────┤</span>
-<span class="hl">│                  BASE DE DATOS                           │</span>
-│  Jugadores · Equipos · Partidos · Manos · Eventos ·     │
-│  Temporadas · Rankings históricos                        │
-<span class="hl">├─────────────────────────────────────────────────────────┤</span>
-<span class="hl">│                  CAPA DE CONSUMO                         │</span>
-│  Panel comentaristas · API broadcast · Redes sociales    │
-<span class="hl">└─────────────────────────────────────────────────────────┘</span>
+    <div class="arch-stack">
+
+      <div class="arch-layer">
+        <div class="arch-layer-title">Capa de captura</div>
+        <div class="arch-cells cols-3">
+          <div class="arch-cell">
+            <div class="arch-cell-name">Planillas</div>
+            <div class="arch-cell-desc">Papel → digital<br>Resultados de clasificación</div>
+            <span class="arch-cell-tag guaranteed">Garantizado</span>
+          </div>
+          <div class="arch-cell">
+            <div class="arch-cell-name">App Veedor</div>
+            <div class="arch-cell-desc">Tablet en mesa<br>Cantos, eventos, resultados</div>
+            <span class="arch-cell-tag guaranteed">Garantizado</span>
+          </div>
+          <div class="arch-cell">
+            <div class="arch-cell-name">Cardcams + CV</div>
+            <div class="arch-cell-desc">Lectura automática de cartas por video</div>
+            <span class="arch-cell-tag research">Sujeto a viabilidad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-title muted">API / Event Bus</div>
+        <div class="arch-layer-detail">Canal central de eventos en tiempo real. Todos los inputs convergen acá antes de procesarse.</div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-title muted">Motor de reglas</div>
+        <div class="arch-layer-detail">Estado del juego · Puntajes · Validación de reglas de truco (envido, truco, flor, pica pica)</div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-title warn">Motores de análisis</div>
+        <div class="arch-cells cols-2">
+          <div class="arch-cell">
+            <div class="arch-cell-name">Motor Estadísticas</div>
+            <div class="arch-cell-desc">Rankings, efectividad, histórico por equipo y jugador</div>
+            <span class="arch-cell-tag guaranteed">Garantizado</span>
+          </div>
+          <div class="arch-cell">
+            <div class="arch-cell-name">Motor Monte Carlo</div>
+            <div class="arch-cell-desc">Probabilidades de victoria en vivo (6 jug. + Pica Pica)</div>
+            <span class="arch-cell-tag research">Sujeto a viabilidad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-title">Base de datos</div>
+        <div class="arch-layer-detail">Jugadores · Equipos · Partidos · Manos · Eventos · Temporadas · Rankings históricos</div>
+      </div>
+
+      <div class="arch-arrow">↓</div>
+
+      <div class="arch-layer">
+        <div class="arch-layer-title">Capa de consumo</div>
+        <div class="arch-cells cols-3">
+          <div class="arch-cell">
+            <div class="arch-cell-name">Panel comentaristas</div>
+            <div class="arch-cell-desc">Stats en vivo para el equipo de transmisión</div>
+          </div>
+          <div class="arch-cell">
+            <div class="arch-cell-name">API Broadcast</div>
+            <div class="arch-cell-desc">Overlay de probabilidades y graphics TV</div>
+          </div>
+          <div class="arch-cell">
+            <div class="arch-cell-name">Redes sociales</div>
+            <div class="arch-cell-desc">Contenido automatizado post-partido</div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <h3>Modelo de entidades principal</h3>
